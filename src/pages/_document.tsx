@@ -15,27 +15,27 @@ export default function Document() {
         <meta name="msapplication-TileColor" content="#025aa1" />
         <meta name="theme-color" content="#ffffff" />
 
-        <meta name="application-name" content="Hyperlane Warp Template UI" />
+        <meta name="application-name" content="KalyBridge" />
         <meta
           name="keywords"
-          content="Hyperlane Warp Route Template UI Token Bridge Interchain App"
+          content="Cross-Chain Token Bridge"
         />
         <meta
           name="description"
-          content="A web app template for building Hyperlane Warp Route UIs"
+          content="Cross-Chain Token Bridge for KalyChain"
         />
 
         <meta name="HandheldFriendly" content="true" />
-        <meta name="apple-mobile-web-app-title" content="Hyperlane Warp Template UI" />
+        <meta name="apple-mobile-web-app-title" content="Cross-Chain Token Bridge for KalyChain" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
 
-        <meta property="og:url" content="https://warp.hyperlane.xyz" />
-        <meta property="og:title" content="Hyperlane Warp Template UI" />
+        <meta property="og:url" content="https://bridge.kalychain.io" />
+        <meta property="og:title" content="Cross-Chain Token Bridge for KalyChain" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://warp.hyperlane.xyz/icon.png" />
+        <meta property="og:image" content="https://bridge.kalychain.io/icon.png" />
         <meta
           property="og:description"
-          content="A web app template for building Hyperlane Warp Route UIs"
+          content="Cross-Chain Token Bridge for KalyChain"
         />
       </Head>
       <body className="text-black">

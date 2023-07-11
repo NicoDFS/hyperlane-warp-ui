@@ -1,10 +1,8 @@
 export const links = {
-  home: 'https://www.hyperlane.xyz',
-  explorer: 'https://explorer.hyperlane.xyz',
-  discord: 'https://discord.gg/VK9ZUy3aTV',
-  github: 'https://github.com/hyperlane-xyz/hyperlane-warp-ui-template',
-  docs: 'https://docs.hyperlane.xyz',
-  chains: 'https://docs.hyperlane.xyz/docs/resources/domains',
-  twitter: 'https://twitter.com/hyperlane_xyz',
-  blog: 'https://medium.com/hyperlane',
+  home: 'https://www.kalychain.io',
+  explorer: 'https://kalyscan.io',
+  discord: 'https://discord.gg/bvtm6dUf',
+  github: 'https://github.com/KalyCoinProject',
+  docs: 'https://docs.kalychain.io/',
+  twitter: 'https://twitter.com/KalyPay',
 };
