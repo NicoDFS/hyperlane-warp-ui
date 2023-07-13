@@ -6,7 +6,7 @@ import { CustomChainMetadata } from '../features/chains/types';
 export const chains: ChainMap<CustomChainMetadata> = {
   // ----------- Add your chains here -----------------
   // Chains already in the SDK need not be included here. Example custom chain:
-   kalytestnet: {
+   kaly: {
      chainId: 3888,
      name: 'kaly',
      displayName: 'KalyChain',
