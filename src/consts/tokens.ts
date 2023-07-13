@@ -17,7 +17,7 @@ export const tokenList: WarpTokenConfig = [
     symbol: 'BNB',
     decimals: 18,
     hypNativeAddress: '0x92fAAf45327682bba965D0Ea933AfB1E0575a0f2',
-    logoURI: '/bnb.png',
+    logoURI: '/bnb.svg',
   },
   {
     type: 'collateral',
@@ -27,7 +27,7 @@ export const tokenList: WarpTokenConfig = [
     name: 'BTCB Token',
     symbol: 'BTCB',
     decimals: 18,
-    logoURI: '/logos/btc.png'
+    logoURI: '/logos/btc.svg'
   },
   {
     type: 'collateral',
@@ -37,6 +37,6 @@ export const tokenList: WarpTokenConfig = [
     name: 'Tether USD',
     symbol: 'USDT',
     decimals: 6,
-    logoURI: '/logos/usdt.png'
+    logoURI: '/logos/usdt.svg'
   },
 ];
