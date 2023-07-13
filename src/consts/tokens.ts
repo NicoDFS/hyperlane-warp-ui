@@ -39,4 +39,24 @@ export const tokenList: WarpTokenConfig = [
     decimals: 6,
     logoURI: '/logos/usdt.svg'
   },
+  {
+    type: 'collateral',
+    chainId: 56,
+    address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+    hypCollateralAddress: '0x6F386FB67851d321a1C3589eb2e37464C1a25435',
+    name: 'Ethereum Token',
+    symbol: 'ETH',
+    decimals: 18,
+    logoURI: '/logos/eth.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 56,
+    address: '0xCC42724C6683B7E57334c4E856f4c9965ED682bD',
+    hypCollateralAddress: '0x89aE5C335372bF4d06ece4cEE1e92D04c3fdf1e0',
+    name: 'Matic Token',
+    symbol: 'MATIC',
+    decimals: 18,
+    logoURI: '/logos/matic.svg'
+  },
 ];
