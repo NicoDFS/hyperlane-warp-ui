@@ -7,14 +7,14 @@ export const chains: ChainMap<CustomChainMetadata> = {
   // ----------- Add your chains here -----------------
   // Chains already in the SDK need not be included here. Example custom chain:
    kalytestnet: {
-     chainId: 3889,
-     name: 'kalytestnet',
-     displayName: 'Kaly Chain',
-     nativeToken: { name: 'KalyCoin', symbol: 'tKLC', decimals: 18 },
-     publicRpcUrls: [{ http: 'https://testnetrpc.kalychain.io/rpc' }],
+     chainId: 3888,
+     name: 'kaly',
+     displayName: 'KalyChain',
+     nativeToken: { name: 'KalyCoin', symbol: 'KLC', decimals: 18 },
+     publicRpcUrls: [{ http: 'https://rpc.kalychain.io/rpc' }],
      blocks: {
        confirmations: 1,
-       reorgPeriod: 1,
+       reorgPeriod: 3,
        estimateBlockTime: 2,
      },
      logoURI: '/kalycoin-logo.svg',
