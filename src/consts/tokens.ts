@@ -32,11 +32,11 @@ export const tokenList: WarpTokenConfig = [
   {
     type: 'collateral',
     chainId: 56,
-    address: '0x0a70dDf7cDBa3E8b6277C9DDcAf2185e8B6f539f',
-    hypCollateralAddress: '0x53E2f15BD8843a13c080F8AeD1F13C95Bee0ea96',
+    address: '0x55d398326f99059fF775485246999027B3197955',
+    hypCollateralAddress: '0x0083635BE6d6e4eFEEeCA5Cbc00faBB8DE13f49d',
     name: 'Tether USD',
     symbol: 'USDT',
-    decimals: 6,
+    decimals: 18,
     logoURI: '/logos/usdt.svg'
   },
   {
