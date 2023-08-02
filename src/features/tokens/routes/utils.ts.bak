@@ -1,3 +1,5 @@
+import { areAddressesEqual } from '../../../utils/addresses';
+
 import { Route, RoutesMap } from './types';
 
 export function getTokenRoutes(
@@ -11,20 +13,20 @@ export function getTokenRoutes(
 export function getTokenRoute(
   originCaip2Id: Caip2Id,
   destinationCaip2Id: Caip2Id,
-  caip19Id: Caip19Id,
+  baseTokenAddress: Address,
   tokenRoutes: RoutesMap,
 ): Route | undefined {
-  if (!caip19Id) return undefined;
-  return getTokenRoutes(originCaip2Id, destinationCaip2Id, tokenRoutes).find(
-    (r) => r.baseCaip19Id === caip19Id,
+  if (!baseTokenAddress) return undefined;
+  return getTokenRoutes(originCaip2Id, destinationCaip2Id, tokenRoutes).find((r) =>
+    areAddressesEqual(baseTokenAddress, r.baseTokenAddress),
   );
 }
 
 export function hasTokenRoute(
   originCaip2Id: Caip2Id,
   destinationCaip2Id: Caip2Id,
-  caip19Id: Caip19Id,
+  baseTokenAddress: Address,
   tokenRoutes: RoutesMap,
 ): boolean {
-  return !!getTokenRoute(originCaip2Id, destinationCaip2Id, caip19Id, tokenRoutes);
+  return !!getTokenRoute(originCaip2Id, destinationCaip2Id, baseTokenAddress, tokenRoutes);
 }
