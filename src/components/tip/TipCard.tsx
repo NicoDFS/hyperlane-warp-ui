@@ -14,6 +14,15 @@ export function TipCard() {
         <p className="text-white mt-1.5 text-xs sm:text-sm max-w-[70%]">
           Warp Routes make it safe and easy to bridge your tokens to and from KalyChain and Binance Smart Chain!
         </p>
+		<a
+          href={links.addtoken}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2 px-3 py-1.5 flex items-center bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-xs sm:text-sm text-blue-500 rounded-md transition-all"
+        >
+          <Image src={InfoCircle} width={16} alt="" />
+          <span className="ml-1.5">Add Tokens</span>
+        </a>
       </div>
       <div className="absolute right-3 top-3 invert">
         <IconButton

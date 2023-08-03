@@ -5,4 +5,5 @@ export const links = {
   github: 'https://github.com/KalyCoinProject',
   docs: 'https://docs.kalychain.io/',
   twitter: 'https://twitter.com/KalyPay',
+  addtoken: 'https://kalybridge.gitbook.io/kalybridge/',
 };
