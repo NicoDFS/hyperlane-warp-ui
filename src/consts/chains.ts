@@ -26,8 +26,8 @@ export const chains: ChainMap<ChainMetadataWithArtifacts> = {
        estimateBlockTime: 2,
      },
      logoURI: 'logos/kalycoin-logo.svg',
-     interchainGasPaymaster: '0xD0a1d1b8E10625eE7Ed4Be4Aa7afA7f169411FBd',
-     mailbox: '0xBA1C86c09dE48226E8D24353DFd8A7cacdfAba6E',
-     validatorAnnounce: '0x80b8E3F8b0Ce1542b523066A7c5C590Bf691d49e'
+     interchainGasPaymaster: '0xF25e1BF3a5231CdEb7cDa51EDa5997e1B9E13Ea3',
+     mailbox: '0xcfafc739e514729df4a81438045BB367691369aa',
+     validatorAnnounce: '0x5850B207c470C1F2F4c1ca6B1f624d4C28B729a1'
    },
 };
