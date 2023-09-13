@@ -59,4 +59,25 @@ export const tokenList: WarpTokenConfig = [
     decimals: 18,
     logoURI: '/logos/matic.svg'
   },
+  {
+    type: 'collateral',
+    chainId: 56,
+    address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+    hypCollateralAddress: '0x8d14109F70012b85616836E14846bf7350B27faF',
+    name: 'DAI Token',
+    symbol: 'DAI',
+    decimals: 18,
+    logoURI: '/logos/dai.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 56,
+    address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+    hypCollateralAddress: '0x7cF0529fd2b229d247D1B23bF7c5ebbf363F09F8',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 18,
+    logoURI: '/logos/usdc.svg'
+  },
+  
 ];
