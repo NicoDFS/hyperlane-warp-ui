@@ -103,7 +103,7 @@ export const tokenList: WarpTokenConfig = [
     address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
     hypCollateralAddress: '0xf06086C74c0B5AA7A894eC5544Cfe7F1722a124f',
     name: 'Ethereum Token',
-    symbol: 'WETH',
+    symbol: 'ETH',
     decimals: 18,
     logoURI: '/logos/eth.svg'
   },
