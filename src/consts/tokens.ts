@@ -20,12 +20,50 @@ export const tokenList: WarpTokenConfig = [
     logoURI: '/bnb.svg',
   },
   {
+    type: 'native',
+    chainId: 137,
+    name: 'MATIC',
+    symbol: 'MATIC',
+    decimals: 18,
+    hypNativeAddress: '0xaDCbfCEC7eA9472D9ae98CC76011E43352064A4b',
+    logoURI: '/logos/matic.svg',
+  },
+  {
+    type: 'native',
+    chainId: 42161,
+    name: 'Ethereum Token',
+    symbol: 'ETH',
+    decimals: 18,
+    hypNativeAddress: '0xb97e20066D78eC43F8D379B063e49Fd6F0F47102',
+    logoURI: '/logos/eth.svg',
+  },
+  {
     type: 'collateral',
     chainId: 56,
     address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
     hypCollateralAddress: '0x533E1037336C2299ce790b56d7d4F2366b83dA84',
     name: 'BTCB Token',
     symbol: 'BTCB',
+    decimals: 18,
+    logoURI: '/logos/btc.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 137,
+    address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+    hypCollateralAddress: '0xF030A6d842766Cd4b576F384d9a8258f113f96e5',
+    name: 'Wrapped BTC',
+    symbol: 'WBTC',
+    decimals: 18,
+    logoURI: '/logos/btc.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 42161,
+    address: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+    hypCollateralAddress: '0x752227CD33d79e2895e2d3723620C4B2077fC4bF',
+    name: 'Wrapped BTC',
+    symbol: 'WBTC',
     decimals: 18,
     logoURI: '/logos/btc.svg'
   },
@@ -41,9 +79,39 @@ export const tokenList: WarpTokenConfig = [
   },
   {
     type: 'collateral',
+    chainId: 137,
+    address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+    hypCollateralAddress: '0x927955abf014b14936bc94E2bF6F7e037A3a9885',
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 18,
+    logoURI: '/logos/usdt.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 42161,
+    address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    hypCollateralAddress: '0x6F386FB67851d321a1C3589eb2e37464C1a25435',
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 18,
+    logoURI: '/logos/usdt.svg'
+  },
+  {
+    type: 'collateral',
     chainId: 56,
     address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
     hypCollateralAddress: '0xf06086C74c0B5AA7A894eC5544Cfe7F1722a124f',
+    name: 'Ethereum Token',
+    symbol: 'ETH',
+    decimals: 18,
+    logoURI: '/logos/eth.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 137,
+    address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+    hypCollateralAddress: '0x0166694072DFCe254dd32B4F1756eaA3acedB28a',
     name: 'Ethereum Token',
     symbol: 'ETH',
     decimals: 18,
@@ -71,6 +139,26 @@ export const tokenList: WarpTokenConfig = [
   },
   {
     type: 'collateral',
+    chainId: 137,
+    address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+    hypCollateralAddress: '0x6d9AcB33eE326EfD2E0EDCC91c18F822d647f905',
+    name: 'DAI Token',
+    symbol: 'DAI',
+    decimals: 18,
+    logoURI: '/logos/dai.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 42161,
+    address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+    hypCollateralAddress: '0xDF8CFefEa7DaA5E5B23c262A461aCcA6356BCA90',
+    name: 'DAI Token',
+    symbol: 'DAI',
+    decimals: 18,
+    logoURI: '/logos/dai.svg'
+  },
+  {
+    type: 'collateral',
     chainId: 56,
     address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
     hypCollateralAddress: '0x7cF0529fd2b229d247D1B23bF7c5ebbf363F09F8',
@@ -79,5 +167,24 @@ export const tokenList: WarpTokenConfig = [
     decimals: 18,
     logoURI: '/logos/usdc.svg'
   },
-  
+  {
+    type: 'collateral',
+    chainId: 137,
+    address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+    hypCollateralAddress: '0xB2be6B954c4b141cF3EB6de7D4f2b093A068E2Df',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 18,
+    logoURI: '/logos/usdc.svg'
+  },
+    {
+    type: 'collateral',
+    chainId: 42161,
+    address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    hypCollateralAddress: '0x89aE5C335372bF4d06ece4cEE1e92D04c3fdf1e0',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 18,
+    logoURI: '/logos/usdc.svg'
+  },
 ];
