@@ -15,7 +15,7 @@ export function TipCard() {
       <h2 className="text-white sm:text-lg">Bridge Your Tokens with KalyBridge!</h2>
       <div className="flex items-end justify-between">
         <p className="text-white mt-1.5 text-xs sm:text-sm max-w-[70%]">
-          Warp Routes make it safe and easy to bridge your tokens to and from KalyChain and Binance Smart Chain!
+          Warp Routes make it safe and easy to bridge your tokens to and from KalyChain, Arbitrum, BSC and Polygon!
         </p>
 		<a
           href={links.addtoken}
