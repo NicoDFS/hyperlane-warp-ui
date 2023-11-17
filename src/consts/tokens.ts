@@ -54,7 +54,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0xF030A6d842766Cd4b576F384d9a8258f113f96e5',
     name: 'Wrapped BTC',
     symbol: 'WBTC',
-    decimals: 18,
+    decimals: 8,
     logoURI: '/logos/btc.svg'
   },
   {
@@ -64,7 +64,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0x752227CD33d79e2895e2d3723620C4B2077fC4bF',
     name: 'Wrapped BTC',
     symbol: 'WBTC',
-    decimals: 18,
+    decimals: 8,
     logoURI: '/logos/btc.svg'
   },
   {
@@ -84,7 +84,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0x927955abf014b14936bc94E2bF6F7e037A3a9885',
     name: 'Tether USD',
     symbol: 'USDT',
-    decimals: 18,
+    decimals: 6,
     logoURI: '/logos/usdt.svg'
   },
   {
@@ -94,7 +94,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0x6F386FB67851d321a1C3589eb2e37464C1a25435',
     name: 'Tether USD',
     symbol: 'USDT',
-    decimals: 18,
+    decimals: 6,
     logoURI: '/logos/usdt.svg'
   },
   {
@@ -174,7 +174,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0xB2be6B954c4b141cF3EB6de7D4f2b093A068E2Df',
     name: 'USD Coin',
     symbol: 'USDC',
-    decimals: 18,
+    decimals: 6,
     logoURI: '/logos/usdc.svg'
   },
     {
@@ -184,7 +184,7 @@ export const tokenList: WarpTokenConfig = [
     hypCollateralAddress: '0x89aE5C335372bF4d06ece4cEE1e92D04c3fdf1e0',
     name: 'USD Coin',
     symbol: 'USDC',
-    decimals: 18,
+    decimals: 6,
     logoURI: '/logos/usdc.svg'
   },
 ];
