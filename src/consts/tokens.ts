@@ -177,7 +177,7 @@ export const tokenList: WarpTokenConfig = [
     decimals: 6,
     logoURI: '/logos/usdc.svg'
   },
-    {
+  {
     type: 'collateral',
     chainId: 42161,
     address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
@@ -186,5 +186,15 @@ export const tokenList: WarpTokenConfig = [
     symbol: 'USDC',
     decimals: 6,
     logoURI: '/logos/usdc.svg'
+  },
+  {
+    type: 'collateral',
+    chainId: 3888,
+    address: '0xd6f35d5f60B7d1755599a5500b6640E0aa7344cE',
+    hypCollateralAddress: '0xc0e8693fbE4B848171225D11582526160A530C7a',
+    name: 'KalyExchange Token',
+    symbol: 'KET',
+    decimals: 18,
+    logoURI: '/logos/ket.png'
   },
 ];
