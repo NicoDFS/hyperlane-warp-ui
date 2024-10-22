@@ -14,7 +14,6 @@ const BLOCKED_COUNTRIES = [
   'BA', // Bosnia & Herzegovina
   'CF', // Central African Republic
   'CD', // Democratic Republic of the Congo
-  'GN', // Guinea
   'GW', // Guinea-Bissau
   'HT', // Haiti
   'IQ', // Iraq
