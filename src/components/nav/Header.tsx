@@ -1,22 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { TransfersStatusBar } from '../../features/transfer/TransfersStatusBar';
 import { WalletControlBar } from '../../features/wallet/WalletControlBar';
-// import Logo from '../../images/logos/app-logo.svg';
-import Title from '../../images/logos/logo-with-text.png';
-// import Name from '../../images/logos/logo-with-text.png';
+import Logo from '../../images/logos/app-logo.png';
+import Name from '../../images/logos/bridgelogo.png';
 
 export function Header() {
   return (
-    <header className="pt-3 pb-2 w-full">
+    <header className="w-full px-2 pb-2 pt-3 sm:px-6 lg:px-12">
       <div className="flex items-start justify-between">
-        <Link href="/" className="py-2 flex items-center">
-          <Image src={Title} width={285} alt="" className="mt-0.5 ml-2 pb-px" />
+        <Link href="/" className="flex items-center py-2">
+          <Image src={Logo} width={63} alt="" />
+          <Image src={Name} width={217} alt="" className="ml-2 mt-0.5 hidden sm:block" />
         </Link>
-        <div className="flex flex-col items-end md:flex-row-reverse md:items-start gap-2">
+        <div className="flex flex-col items-end gap-2 md:flex-row-reverse md:items-start">
           <WalletControlBar />
-          <TransfersStatusBar />
         </div>
       </div>
     </header>

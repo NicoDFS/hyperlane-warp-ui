@@ -1,59 +1,35 @@
 import { useFormikContext } from 'formik';
 
 import { TextField } from '../../components/input/TextField';
-import { AssetNamespace, getCaip19Id } from '../caip/tokens';
 import { TransferFormValues } from '../transfer/types';
-import { useAccountForChain } from '../wallet/hooks';
 
 import { SelectTokenIdField } from './SelectTokenIdField';
-import { useContractSupportsTokenByOwner, useIsSenderNftOwner } from './balances';
-import { RouteType, RoutesMap } from './routes/types';
-import { getTokenRoute } from './routes/utils';
 
-export function SelectOrInputTokenIds({
-  disabled,
-  tokenRoutes,
-}: {
-  disabled: boolean;
-  tokenRoutes: RoutesMap;
-}) {
+// import { useContractSupportsTokenByOwner, useIsSenderNftOwner } from './balances';
+
+export function SelectOrInputTokenIds({ disabled }: { disabled: boolean }) {
   const {
-    values: { originCaip2Id, tokenCaip19Id, destinationCaip2Id },
+    values: { tokenIndex },
   } = useFormikContext<TransferFormValues>();
-
-  const route = getTokenRoute(originCaip2Id, destinationCaip2Id, tokenCaip19Id, tokenRoutes);
-
-  let activeToken = '' as Caip19Id;
-  if (route?.type === RouteType.BaseToSynthetic) {
-    // If the origin is the base chain, use the collateralized token for balance checking
-    activeToken = tokenCaip19Id;
-  } else if (route) {
-    // Otherwise, use the synthetic token for balance checking
-    activeToken = getCaip19Id(
-      route.originCaip2Id,
-      AssetNamespace.erc721,
-      route.originRouterAddress,
-    );
-  }
-
-  const accountAddress = useAccountForChain(originCaip2Id)?.address;
-  const { isContractAllowToGetTokenIds } = useContractSupportsTokenByOwner(
-    activeToken,
-    accountAddress,
-  );
+  // const accountAddress = useAccountAddressForChain(origin);
+  // const { isContractAllowToGetTokenIds } = useContractSupportsTokenByOwner(
+  //   activeToken,
+  //   accountAddress,
+  // );
+  const isContractAllowToGetTokenIds = true;
 
   return isContractAllowToGetTokenIds ? (
-    <SelectTokenIdField name="amount" disabled={disabled} caip19Id={activeToken} />
+    <SelectTokenIdField name="amount" disabled={disabled} tokenIndex={tokenIndex} />
   ) : (
-    <InputTokenId disabled={disabled} caip19Id={activeToken} />
+    <InputTokenId disabled={disabled} tokenIndex={tokenIndex} />
   );
 }
 
-function InputTokenId({ disabled, caip19Id }: { disabled: boolean; caip19Id: Caip19Id }) {
-  const {
-    values: { amount },
-  } = useFormikContext<TransferFormValues>();
-  useIsSenderNftOwner(caip19Id, amount);
+function InputTokenId({ disabled }: { disabled: boolean; tokenIndex?: number }) {
+  // const {
+  //   values: { amount },
+  // } = useFormikContext<TransferFormValues>();
+  // useIsSenderNftOwner(token, amount);
 
   return (
     <div className="relative w-full">

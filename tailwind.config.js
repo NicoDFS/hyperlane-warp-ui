@@ -6,11 +6,12 @@ module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontFamily: {
-      sans: ['Neue Haas Grotesk', 'Helvetica', 'sans-serif'],
+      sans: ['var(--font-main)'],
       serif: ['Garamond', 'serif'],
       mono: ['Courier New', 'monospace'],
     },
     screens: {
+      all: '1px',
       xs: '480px',
       ...defaultTheme.screens,
     },
@@ -18,18 +19,30 @@ module.exports = {
       colors: {
         black: '#010101',
         white: '#ffffff',
-        gray: {...defaultTheme.colors.gray, 150: '#EBEDF0'},
-        blue: {
+        gray: {...defaultTheme.colors.gray, 150: '#EBEDF0', 250: '#404040', 350: '#6B6B6B'},
+        primary: {
           50: '#E6EDF9',
           100: '#CDDCF4',
           200: '#A7C2EC',
           300: '#82A8E4',
           400: '#5385D2',
-          500: '#2362C0',
+          500: '#424949',
           600: '#1D4685',
           700: '#162A4A',
           800: '#11213B',
           900: '#0D192C',
+        },
+        accent: {
+          50: '#FAEAF8',
+          100: '#F2C1EA',
+          200: '#EA98DC',
+          300: '#E26ECE',
+          400: '#DA45C0',
+          500: '#D79A10',
+          600: '#C02CA6',
+          700: '#952281',
+          800: '#6B185C',
+          900: '#400E37',
         },
         red: {
           100: '#EBBAB8',
@@ -54,20 +67,11 @@ module.exports = {
           800: '#17462E',
           900: '#0F2F1E',
         },
-        pink: {
-          50: '#FAEAF8',
-          100: '#F2C1EA',
-          200: '#EA98DC',
-          300: '#E26ECE',
-          400: '#DA45C0',
-          500: '#D631B9',
-          600: '#C02CA6',
-          700: '#952281',
-          800: '#6B185C',
-          900: '#400E37',
-        }
       },
       fontSize: {
+        xxs: '0.7rem',
+        xs: '0.775rem',
+        sm: '0.85rem',
         md: '0.95rem',
       },
       spacing: {
@@ -79,10 +83,10 @@ module.exports = {
       },
       borderRadius: {
         none: '0',
-        sm: '0.25rem',
-        DEFAULT: '0.35rem',
-        md: '0.45rem',
-        lg: '0.55rem',
+        sm: '0.20rem',
+        DEFAULT: '0.30rem',
+        md: '0.40rem',
+        lg: '0.50rem',
         full: '9999px',
       },
       blur: {
@@ -94,7 +98,10 @@ module.exports = {
       transitionProperty: {
         'height': 'height, max-height',
         'spacing': 'margin, padding',
-      }
+      },
+      maxWidth: {
+        'xl-1': '39.5rem',
+      },
     },
   },
   plugins: [],

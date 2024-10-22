@@ -35,24 +35,6 @@ select:focus {
 }
 
 /*
-Background 
-==========
-*/
-#app-content::before {
-  content: '';
-  position: fixed;
-  z-index: -1;
-  display: block;
-  width: 100vw;
-  height: 100vh;
-  background-color: #f3f4f6;
-  background-image: url('/background-texture.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center top;
-}
-
-/*
 Text and shadows
 ================
 */
@@ -61,33 +43,16 @@ Text and shadows
   text-shadow: 0 0 #010101;
 }
 
-/*
+/* 
 Scrollbar Overrides
 ===================
 */
 
-html {
-  --scrollbarBG: rgba(255, 255, 255, 0);
-  --thumbBG: #dddddd;
-}
 body {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background-color: var(--scrollbarBG);
-}
-::-webkit-scrollbar-track {
-  background-color: var(--scrollbarBG);
-}
-::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG);
-  border-radius: 6px;
-  border: 3px solid var(--scrollbarBG);
-}
+
 /* phones */
 @media only screen and (max-width: 767px) {
   ::-webkit-scrollbar {
@@ -227,4 +192,21 @@ Toasts
   --toastify-color-progress-success: var(--toastify-color-success);
   --toastify-color-progress-warning: var(--toastify-color-warning);
   --toastify-color-progress-error: var(--toastify-color-error);
+}
+
+/*
+Timeline tweaks
+===============
+*/
+
+.timeline-container h4 {
+  font-size: clamp(0.75rem, 0.825rem, 0.9rem);
+}
+
+/*
+Fixes for cosmos chain selection modal
+====================================
+*/
+div[data-floating-ui-portal] > div {
+  z-index: 10000;
 }

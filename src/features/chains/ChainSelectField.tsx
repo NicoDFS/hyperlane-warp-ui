@@ -12,21 +12,21 @@ import { getChainDisplayName } from './utils';
 type Props = {
   name: string;
   label: string;
-  caip2Ids: Caip2Id[];
-  onChange?: (id: Caip2Id) => void;
+  chains: ChainName[];
+  onChange?: (id: ChainName) => void;
   disabled?: boolean;
 };
 
-export function ChainSelectField({ name, label, caip2Ids, onChange, disabled }: Props) {
-  const [field, , helpers] = useField<Caip2Id>(name);
+export function ChainSelectField({ name, label, chains, onChange, disabled }: Props) {
+  const [field, , helpers] = useField<ChainName>(name);
   const { setFieldValue } = useFormikContext<TransferFormValues>();
 
-  const handleChange = (newChainId: Caip2Id) => {
+  const handleChange = (newChainId: ChainName) => {
     helpers.setValue(newChainId);
     // Reset other fields on chain change
-    setFieldValue('tokenCaip19Id', '');
-    setFieldValue('recipientAddress', '');
+    setFieldValue('recipient', '');
     setFieldValue('amount', '');
+    setFieldValue('tokenIndex', undefined);
     if (onChange) onChange(newChainId);
   };
 
@@ -37,31 +37,30 @@ export function ChainSelectField({ name, label, caip2Ids, onChange, disabled }: 
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex flex-col items-center justify-center rounded-full bg-gray-100 h-[5.5rem] w-[5.5rem] p-1.5">
-        <div className="flex items-end h-11">
-          <ChainLogo caip2Id={field.value} size={34} />
-        </div>
-        <label htmlFor={name} className="mt-2 mb-1 text-sm text-gray-500 uppercase">
-          {label}
-        </label>
-      </div>
+    <div className="flex-[4]">
       <button
         type="button"
         name={field.name}
         className={`${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
         onClick={onClick}
       >
-        <div className="flex items-center">
-          <ChainLogo caip2Id={field.value} size={14} />
-          <span className="ml-2">{getChainDisplayName(field.value, true)}</span>
+        <div className="flex items-center gap-3">
+          <div className="max-w-[1.4rem] sm:max-w-fit">
+            <ChainLogo chainName={field.value} size={32} />
+          </div>
+          <div className="flex flex-col items-start gap-1">
+            <label htmlFor={name} className="text-xs text-gray-600">
+              {label}
+            </label>
+            {getChainDisplayName(field.value, true)}
+          </div>
         </div>
         <Image src={ChevronIcon} width={12} height={8} alt="" />
       </button>
       <ChainSelectListModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
-        caip2Ids={caip2Ids}
+        chains={chains}
         onSelect={handleChange}
       />
     </div>
@@ -69,7 +68,7 @@ export function ChainSelectField({ name, label, caip2Ids, onChange, disabled }: 
 }
 
 const styles = {
-  base: 'w-36 px-2.5 py-2 relative -top-1.5 flex items-center justify-between text-sm bg-white rounded border border-gray-400 outline-none transition-colors duration-500',
-  enabled: 'hover:bg-gray-50 active:bg-gray-100 focus:border-blue-500',
+  base: 'px-2 py-1.5 w-full flex items-center justify-between text-sm bg-white rounded-lg border border-primary-300 outline-none transition-colors duration-500',
+  enabled: 'hover:bg-gray-100 active:scale-95 focus:border-primary-500',
   disabled: 'bg-gray-150 cursor-default',
 };

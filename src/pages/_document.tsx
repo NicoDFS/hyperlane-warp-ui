@@ -1,5 +1,7 @@
 import { Head, Html, Main, NextScript } from 'next/document';
 
+import { APP_DESCRIPTION, APP_NAME, APP_URL, BRAND_COLOR, MAIN_FONT } from '../consts/app';
+
 export default function Document() {
   return (
     <Html>
@@ -10,35 +12,26 @@ export default function Document() {
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#025aa1" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color={BRAND_COLOR} />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <meta name="msapplication-TileColor" content="#025aa1" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="theme-color" content="#ffffff" />
 
-        <meta name="application-name" content="KalyBridge" />
-        <meta
-          name="keywords"
-          content="Cross-Chain Token Bridge"
-        />
-        <meta
-          name="description"
-          content="Cross-Chain Token Bridge for KalyChain"
-        />
+        <meta name="application-name" content={APP_NAME} />
+        <meta name="keywords" content={APP_NAME + ' KalyChain Token Bridge Interchain App'} />
+        <meta name="description" content={APP_DESCRIPTION} />
 
         <meta name="HandheldFriendly" content="true" />
-        <meta name="apple-mobile-web-app-title" content="Cross-Chain Token Bridge for KalyChain" />
+        <meta name="apple-mobile-web-app-title" content={APP_NAME} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
 
-        <meta property="og:url" content="https://bridge.kalychain.io" />
-        <meta property="og:title" content="Cross-Chain Token Bridge for KalyChain" />
+        <meta property="og:url" content={APP_URL} />
+        <meta property="og:title" content={APP_NAME} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://bridge.kalychain.io/icon.png" />
-        <meta
-          property="og:description"
-          content="Cross-Chain Token Bridge for KalyChain"
-        />
+        <meta property="og:image" content={`${APP_URL}/logo.svg`} />
+        <meta property="og:description" content={APP_DESCRIPTION} />
       </Head>
-      <body className="text-black">
+      <body className={`${MAIN_FONT.variable} font-sans text-black`}>
         <Main />
         <NextScript />
       </body>

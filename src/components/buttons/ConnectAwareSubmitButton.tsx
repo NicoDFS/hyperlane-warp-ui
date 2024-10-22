@@ -1,26 +1,26 @@
 import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 
-import { ProtocolType } from '@hyperlane-xyz/sdk';
+import { ProtocolType } from '@hyperlane-xyz/utils';
 
-import { tryGetProtocolType } from '../../features/caip/chains';
-import { useAccountForChain, useConnectFns } from '../../features/wallet/hooks';
+import { tryGetChainProtocol } from '../../features/chains/utils';
+import { useAccountForChain, useConnectFns } from '../../features/wallet/hooks/multiProtocol';
 import { useTimeout } from '../../utils/timeout';
 
 import { SolidButton } from './SolidButton';
 
 interface Props {
-  caip2Id: Caip2Id;
+  chainName: ChainName;
   text: string;
   classes?: string;
 }
 
-export function ConnectAwareSubmitButton<FormValues = any>({ caip2Id, text, classes }: Props) {
-  const protocol = tryGetProtocolType(caip2Id) || ProtocolType.Ethereum;
+export function ConnectAwareSubmitButton<FormValues = any>({ chainName, text, classes }: Props) {
+  const protocol = tryGetChainProtocol(chainName) || ProtocolType.Ethereum;
   const connectFns = useConnectFns();
   const connectFn = connectFns[protocol];
 
-  const account = useAccountForChain(caip2Id);
+  const account = useAccountForChain(chainName);
   const isAccountReady = account?.isReady;
 
   const { errors, setErrors, touched, setTouched } = useFormikContext<FormValues>();
@@ -28,8 +28,8 @@ export function ConnectAwareSubmitButton<FormValues = any>({ caip2Id, text, clas
   const hasError = Object.keys(touched).length > 0 && Object.keys(errors).length > 0;
   const firstError = `${Object.values(errors)[0]}` || 'Unknown error';
 
-  const color = hasError ? 'red' : 'blue';
-  const content = hasError ? firstError : isAccountReady ? text : 'Connect Wallet';
+  const color = hasError ? 'red' : 'accent';
+  const content = hasError ? firstError : isAccountReady ? text : 'Connect wallet';
   const type = isAccountReady ? 'submit' : 'button';
   const onClick = isAccountReady ? undefined : connectFn;
 
@@ -40,7 +40,7 @@ export function ConnectAwareSubmitButton<FormValues = any>({ caip2Id, text, clas
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setErrors, setTouched, errors, touched]);
 
-  useTimeout(clearErrors, 3000);
+  useTimeout(clearErrors, 3500);
 
   return (
     <SolidButton type={type} color={color} onClick={onClick} classes={classes}>

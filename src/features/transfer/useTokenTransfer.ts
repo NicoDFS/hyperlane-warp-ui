@@ -1,31 +1,27 @@
-import type { Transaction as SolTransaction } from '@solana/web3.js';
-import { BigNumber, PopulatedTransaction as EvmTransaction, providers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { HyperlaneCore, ProtocolType } from '@hyperlane-xyz/sdk';
+import { TypedTransactionReceipt, WarpTxCategory } from '@hyperlane-xyz/sdk';
+import { toTitleCase, toWei } from '@hyperlane-xyz/utils';
 
 import { toastTxSuccess } from '../../components/toast/TxSuccessToast';
-import { toWei } from '../../utils/amount';
+import { getTokenByIndex, getWarpCore } from '../../context/context';
 import { logger } from '../../utils/logger';
-import { getProtocolType, parseCaip2Id } from '../caip/chains';
-import { isNativeToken, isNonFungibleToken } from '../caip/tokens';
-import { getMultiProvider } from '../multiProvider';
+import { getChainDisplayName } from '../chains/utils';
 import { AppState, useStore } from '../store';
-import { AdapterFactory } from '../tokens/adapters/AdapterFactory';
-import { IHypTokenAdapter } from '../tokens/adapters/ITokenAdapter';
-import { Route, RouteType, RoutesMap } from '../tokens/routes/types';
-import { getTokenRoute } from '../tokens/routes/utils';
 import {
-  AccountInfo,
-  ActiveChainInfo,
-  SendTransactionFn,
+  getAccountAddressForChain,
   useAccounts,
   useActiveChains,
   useTransactionFns,
-} from '../wallet/hooks';
+} from '../wallet/hooks/multiProtocol';
 
 import { TransferContext, TransferFormValues, TransferStatus } from './types';
+import { tryGetMsgIdFromTransferReceipt } from './utils';
+
+const CHAIN_MISMATCH_ERROR = 'ChainMismatchError';
+const TRANSFER_TIMEOUT_ERROR1 = 'block height exceeded';
+const TRANSFER_TIMEOUT_ERROR2 = 'timeout';
 
 export function useTokenTransfer(onDone?: () => void) {
   const { transfers, addTransfer, updateTransferStatus } = useStore((s) => ({
@@ -43,10 +39,9 @@ export function useTokenTransfer(onDone?: () => void) {
 
   // TODO implement cancel callback for when modal is closed?
   const triggerTransactions = useCallback(
-    (values: TransferFormValues, tokenRoutes: RoutesMap) =>
+    (values: TransferFormValues) =>
       executeTransfer({
         values,
-        tokenRoutes,
         transferIndex,
         activeAccounts,
         activeChains,
@@ -76,7 +71,6 @@ export function useTokenTransfer(onDone?: () => void) {
 
 async function executeTransfer({
   values,
-  tokenRoutes,
   transferIndex,
   activeAccounts,
   activeChains,
@@ -87,7 +81,6 @@ async function executeTransfer({
   onDone,
 }: {
   values: TransferFormValues;
-  tokenRoutes: RoutesMap;
   transferIndex: number;
   activeAccounts: ReturnType<typeof useAccounts>;
   activeChains: ReturnType<typeof useActiveChains>;
@@ -99,74 +92,96 @@ async function executeTransfer({
 }) {
   logger.debug('Preparing transfer transaction(s)');
   setIsLoading(true);
-  let status: TransferStatus = TransferStatus.Preparing;
+  let transferStatus: TransferStatus = TransferStatus.Preparing;
+  updateTransferStatus(transferIndex, transferStatus);
 
+  const { origin, destination, tokenIndex, amount, recipient } = values;
   try {
-    const { originCaip2Id, destinationCaip2Id, tokenCaip19Id, amount, recipientAddress } = values;
-    const { protocol: originProtocol, reference: originReference } = parseCaip2Id(originCaip2Id);
-    const { reference: destReference } = parseCaip2Id(destinationCaip2Id);
+    const originToken = getTokenByIndex(tokenIndex);
+    const connection = originToken?.getConnectionForChain(destination);
+    if (!originToken || !connection) throw new Error('No token route found between chains');
 
-    const multiProvider = getMultiProvider();
-    const destinationDomainId = multiProvider.getDomainId(destReference);
-    const originMetadata = multiProvider.getChainMetadataWithArtifacts(originReference);
-    const originMailbox = originMetadata.mailbox;
+    const originProtocol = originToken.protocol;
+    const isNft = originToken.isNft();
+    const weiAmountOrId = isNft ? amount : toWei(amount, originToken.decimals);
+    const originTokenAmount = originToken.amount(weiAmountOrId);
 
-    const tokenRoute = getTokenRoute(originCaip2Id, destinationCaip2Id, tokenCaip19Id, tokenRoutes);
-    if (!tokenRoute) throw new Error('No token route found between chains');
+    const sendTransaction = transactionFns[originProtocol].sendTransaction;
+    const activeChain = activeChains.chains[originProtocol];
+    const sender = getAccountAddressForChain(origin, activeAccounts.accounts);
+    if (!sender) throw new Error('No active account found for origin chain');
 
-    const isNft = isNonFungibleToken(tokenCaip19Id);
-    const amountOrId = isNft ? amount : toWei(amount, tokenRoute.decimals).toString();
+    const warpCore = getWarpCore();
 
-    addTransfer({
-      status,
-      route: tokenRoute,
-      params: values,
+    const isCollateralSufficient = await warpCore.isDestinationCollateralSufficient({
+      originTokenAmount,
+      destination,
     });
-
-    const hypTokenAdapter = AdapterFactory.HypTokenAdapterFromRouteOrigin(tokenRoute);
-
-    const triggerParams: ExecuteTransferParams<any> = {
-      amountOrId,
-      destinationDomainId,
-      recipientAddress,
-      tokenRoute,
-      hypTokenAdapter,
-      activeAccount: activeAccounts.accounts[originProtocol],
-      activeChain: activeChains.chains[originProtocol],
-      updateStatus: (s: TransferStatus) => {
-        status = s;
-        updateTransferStatus(transferIndex, s);
-      },
-      sendTransaction: transactionFns[originProtocol].sendTransaction,
-      originMailbox,
-    };
-    let transferTxHash: string;
-    let msgId: string | undefined;
-    if (originProtocol === ProtocolType.Ethereum) {
-      const result = await executeEvmTransfer(triggerParams);
-      ({ transferTxHash, msgId } = result);
-    } else if (originProtocol === ProtocolType.Sealevel) {
-      const result = await executeSealevelTransfer(triggerParams);
-      ({ transferTxHash } = result);
-    } else {
-      throw new Error(`Unsupported protocol type: ${originProtocol}`);
+    if (!isCollateralSufficient) {
+      toast.error('Insufficient collateral on destination for transfer');
+      throw new Error('Insufficient destination collateral');
     }
 
-    updateTransferStatus(transferIndex, (status = TransferStatus.ConfirmedTransfer), {
-      originTxHash: transferTxHash,
-      msgId,
+    addTransfer({
+      timestamp: new Date().getTime(),
+      status: TransferStatus.Preparing,
+      origin,
+      destination,
+      originTokenAddressOrDenom: originToken.addressOrDenom,
+      destTokenAddressOrDenom: connection.token.addressOrDenom,
+      sender,
+      recipient,
+      amount,
     });
 
-    logger.debug('Transfer transaction confirmed, hash:', transferTxHash);
-    toastTxSuccess('Remote transfer started!', transferTxHash, originCaip2Id);
-  } catch (error) {
-    logger.error(`Error at stage ${status} `, error);
+    updateTransferStatus(transferIndex, (transferStatus = TransferStatus.CreatingTxs));
+
+    const txs = await warpCore.getTransferRemoteTxs({
+      originTokenAmount,
+      destination,
+      sender,
+      recipient,
+    });
+
+    const hashes: string[] = [];
+    let txReceipt: TypedTransactionReceipt | undefined = undefined;
+    for (const tx of txs) {
+      updateTransferStatus(transferIndex, (transferStatus = txCategoryToStatuses[tx.category][0]));
+      const { hash, confirm } = await sendTransaction({
+        tx,
+        chainName: origin,
+        activeChainName: activeChain.chainName,
+      });
+      updateTransferStatus(transferIndex, (transferStatus = txCategoryToStatuses[tx.category][1]));
+      txReceipt = await confirm();
+      const description = toTitleCase(tx.category);
+      logger.debug(`${description} transaction confirmed, hash:`, hash);
+      toastTxSuccess(`${description} transaction sent!`, hash, origin);
+      hashes.push(hash);
+    }
+
+    const msgId = txReceipt ? tryGetMsgIdFromTransferReceipt(origin, txReceipt) : undefined;
+
+    updateTransferStatus(transferIndex, (transferStatus = TransferStatus.ConfirmedTransfer), {
+      originTxHash: hashes.at(-1),
+      msgId,
+    });
+  } catch (error: any) {
+    logger.error(`Error at stage ${transferStatus}`, error);
+    const errorDetails = error.message || error.toString();
     updateTransferStatus(transferIndex, TransferStatus.Failed);
-    if (JSON.stringify(error).includes('ChainMismatchError')) {
+    if (errorDetails.includes(CHAIN_MISMATCH_ERROR)) {
       // Wagmi switchNetwork call helps prevent this but isn't foolproof
       toast.error('Wallet must be connected to origin chain');
+    } else if (
+      errorDetails.includes(TRANSFER_TIMEOUT_ERROR1) ||
+      errorDetails.includes(TRANSFER_TIMEOUT_ERROR2)
+    ) {
+      toast.error(
+        `Transaction timed out, ${getChainDisplayName(origin)} may be busy. Please try again.`,
+      );
     } else {
-      toast.error(errorMessages[status] || 'Unable to transfer tokens.');
+      toast.error(errorMessages[transferStatus] || 'Unable to transfer tokens.');
     }
   }
 
@@ -174,155 +189,16 @@ async function executeTransfer({
   if (onDone) onDone();
 }
 
-interface ExecuteTransferParams<TxResp> {
-  amountOrId: string;
-  destinationDomainId: DomainId;
-  recipientAddress: Address;
-  tokenRoute: Route;
-  hypTokenAdapter: IHypTokenAdapter;
-  activeAccount: AccountInfo;
-  activeChain: ActiveChainInfo;
-  updateStatus: (s: TransferStatus) => void;
-  sendTransaction: SendTransactionFn<TxResp>;
-  originMailbox?: Address;
-}
-
-async function executeEvmTransfer({
-  amountOrId,
-  destinationDomainId,
-  recipientAddress,
-  tokenRoute,
-  hypTokenAdapter,
-  activeChain,
-  updateStatus,
-  sendTransaction,
-}: ExecuteTransferParams<providers.TransactionReceipt>) {
-  const { type: routeType, baseRouterAddress, originCaip2Id, baseCaip19Id } = tokenRoute;
-
-  if (isTransferApproveRequired(tokenRoute, baseCaip19Id)) {
-    updateStatus(TransferStatus.CreatingApprove);
-    const tokenAdapter = AdapterFactory.TokenAdapterFromAddress(baseCaip19Id);
-    const approveTxRequest = (await tokenAdapter.populateApproveTx({
-      amountOrId,
-      recipient: baseRouterAddress,
-    })) as EvmTransaction;
-
-    updateStatus(TransferStatus.SigningApprove);
-    const { confirm: confirmApprove } = await sendTransaction({
-      tx: approveTxRequest,
-      caip2Id: originCaip2Id,
-      activeCap2Id: activeChain.caip2Id,
-    });
-
-    updateStatus(TransferStatus.ConfirmingApprove);
-    const approveTxReceipt = await confirmApprove();
-    logger.debug('Approve transaction confirmed, hash:', approveTxReceipt.transactionHash);
-    toastTxSuccess('Approve transaction sent!', approveTxReceipt.transactionHash, originCaip2Id);
-  }
-
-  updateStatus(TransferStatus.CreatingTransfer);
-
-  const gasPayment = await hypTokenAdapter.quoteGasPayment(destinationDomainId);
-  logger.debug('Quoted gas payment', gasPayment);
-  // If sending native tokens (e.g. Eth), the gasPayment must be added to the tx value and sent together
-  const txValue =
-    routeType === RouteType.BaseToSynthetic && isNativeToken(baseCaip19Id)
-      ? BigNumber.from(gasPayment).add(amountOrId)
-      : gasPayment;
-  const transferTxRequest = (await hypTokenAdapter.populateTransferRemoteTx({
-    amountOrId,
-    recipient: recipientAddress,
-    destination: destinationDomainId,
-    txValue: txValue.toString(),
-  })) as EvmTransaction;
-
-  updateStatus(TransferStatus.SigningTransfer);
-  const { hash: transferTxHash, confirm: confirmTransfer } = await sendTransaction({
-    tx: transferTxRequest,
-    caip2Id: originCaip2Id,
-    activeCap2Id: activeChain.caip2Id,
-  });
-
-  updateStatus(TransferStatus.ConfirmingTransfer);
-  const transferReceipt = await confirmTransfer();
-  const msgId = tryGetMsgIdFromEvmTransferReceipt(transferReceipt);
-
-  return { transferTxHash, msgId };
-}
-
-async function executeSealevelTransfer({
-  amountOrId,
-  destinationDomainId,
-  recipientAddress,
-  tokenRoute,
-  hypTokenAdapter,
-  activeAccount,
-  activeChain,
-  updateStatus,
-  sendTransaction,
-  originMailbox,
-}: ExecuteTransferParams<void>) {
-  const { originCaip2Id } = tokenRoute;
-
-  updateStatus(TransferStatus.CreatingTransfer);
-
-  // TODO solana enable gas payments?
-  // const gasPayment = await hypTokenAdapter.quoteGasPayment(destinationDomainId);
-  // logger.debug('Quoted gas payment', gasPayment);
-
-  const transferTxRequest = (await hypTokenAdapter.populateTransferRemoteTx({
-    amountOrId,
-    destination: destinationDomainId,
-    recipient: recipientAddress,
-    fromAccountOwner: activeAccount.address,
-    mailbox: originMailbox,
-  })) as SolTransaction;
-
-  updateStatus(TransferStatus.SigningTransfer);
-
-  const { hash: transferTxHash, confirm: confirmTransfer } = await sendTransaction({
-    tx: transferTxRequest,
-    caip2Id: originCaip2Id,
-    activeCap2Id: activeChain.caip2Id,
-  });
-
-  updateStatus(TransferStatus.ConfirmingTransfer);
-  await confirmTransfer();
-
-  return { transferTxHash };
-}
-
-export function isTransferApproveRequired(route: Route, caip19Id: Caip19Id) {
-  return (
-    !isNativeToken(caip19Id) &&
-    route.type === RouteType.BaseToSynthetic &&
-    getProtocolType(route.originCaip2Id) === ProtocolType.Ethereum
-  );
-}
-
-function tryGetMsgIdFromEvmTransferReceipt(receipt: providers.TransactionReceipt) {
-  try {
-    const messages = HyperlaneCore.getDispatchedMessages(receipt);
-    if (messages.length) {
-      const msgId = messages[0].id;
-      logger.debug('Message id found in logs', msgId);
-      return msgId;
-    } else {
-      logger.warn('No messages found in logs');
-      return undefined;
-    }
-  } catch (error) {
-    logger.error('Could not get msgId from transfer receipt', error);
-    return undefined;
-  }
-}
-
 const errorMessages: Partial<Record<TransferStatus, string>> = {
   [TransferStatus.Preparing]: 'Error while preparing the transactions.',
-  [TransferStatus.CreatingApprove]: 'Error while creating the approve transaction.',
+  [TransferStatus.CreatingTxs]: 'Error while creating the transactions.',
   [TransferStatus.SigningApprove]: 'Error while signing the approve transaction.',
   [TransferStatus.ConfirmingApprove]: 'Error while confirming the approve transaction.',
-  [TransferStatus.CreatingTransfer]: 'Error while creating the transfer transaction.',
   [TransferStatus.SigningTransfer]: 'Error while signing the transfer transaction.',
   [TransferStatus.ConfirmingTransfer]: 'Error while confirming the transfer transaction.',
+};
+
+const txCategoryToStatuses: Record<WarpTxCategory, [TransferStatus, TransferStatus]> = {
+  [WarpTxCategory.Approval]: [TransferStatus.SigningApprove, TransferStatus.ConfirmingApprove],
+  [WarpTxCategory.Transfer]: [TransferStatus.SigningTransfer, TransferStatus.ConfirmingTransfer],
 };

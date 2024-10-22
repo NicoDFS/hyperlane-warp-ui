@@ -6,15 +6,13 @@ import { Spinner } from '../../components/animation/Spinner';
 import { Modal } from '../../components/layout/Modal';
 import ChevronIcon from '../../images/icons/chevron-down.svg';
 
-import { useOriginTokenIdBalance } from './balances';
-
 type Props = {
   name: string;
-  caip19Id: Caip19Id;
+  tokenIndex?: number;
   disabled?: boolean;
 };
 
-export function SelectTokenIdField({ name, caip19Id, disabled }: Props) {
+export function SelectTokenIdField({ name, disabled }: Props) {
   const [, , helpers] = useField<number>(name);
   const [tokenId, setTokenId] = useState<string | undefined>(undefined);
   const handleChange = (newTokenId: string) => {
@@ -22,7 +20,8 @@ export function SelectTokenIdField({ name, caip19Id, disabled }: Props) {
     setTokenId(newTokenId);
   };
 
-  const { isLoading, tokenIds } = useOriginTokenIdBalance(caip19Id);
+  const isLoading = false;
+  const tokenIds = [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -83,14 +82,14 @@ export function SelectTokenIdModal({
           tokenIds.map((id) => (
             <button
               key={id}
-              className="py-1.5 px-2 text-sm flex items-center rounded hover:bg-gray-100 active:bg-gray-200 transition-all duration-200"
+              className="flex items-center rounded px-2 py-1.5 text-sm transition-all duration-200 hover:bg-gray-100 active:bg-gray-200"
               onClick={onSelectTokenId(id)}
             >
               <span className="ml-2">{id}</span>
             </button>
           ))
         ) : (
-          <div className="py-1.5 px-2 text-sm text-gray-500 transition-all duration-200">
+          <div className="px-2 py-1.5 text-sm text-gray-500 transition-all duration-200">
             No token ids found
           </div>
         )}
@@ -101,6 +100,6 @@ export function SelectTokenIdModal({
 
 const styles = {
   base: 'mt-1.5 w-full px-2.5 py-2 flex items-center justify-between text-sm bg-white rounded border border-gray-400 outline-none transition-colors duration-500',
-  enabled: 'hover:bg-gray-50 active:bg-gray-100 focus:border-blue-500',
+  enabled: 'hover:bg-gray-50 active:bg-gray-100 focus:border-primary-500',
   disabled: 'bg-gray-150 cursor-default',
 };

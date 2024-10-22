@@ -2,94 +2,110 @@ import { useField, useFormikContext } from 'formik';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
+import { IToken } from '@hyperlane-xyz/sdk';
+
 import { TokenIcon } from '../../components/icons/TokenIcon';
+import { getIndexForToken, getTokenByIndex, getWarpCore } from '../../context/context';
 import ChevronIcon from '../../images/icons/chevron-down.svg';
-import { isNonFungibleToken } from '../caip/tokens';
 import { TransferFormValues } from '../transfer/types';
 
 import { TokenListModal } from './TokenListModal';
-import { RoutesMap } from './routes/types';
-import { TokenMetadata } from './types';
 
 type Props = {
   name: string;
-  originCaip2Id: Caip2Id;
-  destinationCaip2Id: Caip2Id;
-  tokenRoutes: RoutesMap;
   disabled?: boolean;
   setIsNft: (value: boolean) => void;
 };
 
-export function TokenSelectField({
-  name,
-  originCaip2Id,
-  destinationCaip2Id,
-  tokenRoutes,
-  disabled,
-  setIsNft,
-}: Props) {
-  const [field, , helpers] = useField<Address>(name);
-  const { setFieldValue } = useFormikContext<TransferFormValues>();
+export function TokenSelectField({ name, disabled, setIsNft }: Props) {
+  const { values } = useFormikContext<TransferFormValues>();
+  const [field, , helpers] = useField<number | undefined>(name);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAutomaticSelection, setIsAutomaticSelection] = useState(false);
 
-  // Keep local state for token details, but let formik manage field value
-  const [token, setToken] = useState<TokenMetadata | undefined>(undefined);
-
-  // Keep local state in sync with formik state
+  const { origin, destination } = values;
   useEffect(() => {
-    if (!field.value) setToken(undefined);
-    else if (field.value !== token?.caip19Id) {
-      setToken(undefined);
-      helpers.setValue('');
+    const tokensWithRoute = getWarpCore().getTokensForRoute(origin, destination);
+    let newFieldValue: number | undefined;
+    let newIsAutomatic: boolean;
+    // No tokens available for this route
+    if (tokensWithRoute.length === 0) {
+      newFieldValue = undefined;
+      newIsAutomatic = true;
     }
-  }, [token, field.value, helpers]);
+    // Exactly one found
+    else if (tokensWithRoute.length === 1) {
+      newFieldValue = getIndexForToken(tokensWithRoute[0]);
+      newIsAutomatic = true;
+      // Multiple possibilities
+    } else {
+      newFieldValue = undefined;
+      newIsAutomatic = false;
+    }
+    helpers.setValue(newFieldValue);
+    setIsAutomaticSelection(newIsAutomatic);
+  }, [origin, destination, helpers]);
 
-  const handleChange = (newToken: TokenMetadata) => {
+  const onSelectToken = (newToken: IToken) => {
     // Set the token address value in formik state
-    helpers.setValue(newToken.caip19Id);
-    // reset amount after change token
-    setFieldValue('amount', '');
-    // Update local state
-    setToken(newToken);
+    helpers.setValue(getIndexForToken(newToken));
     // Update nft state in parent
-    setIsNft(!!isNonFungibleToken(newToken.caip19Id));
+    setIsNft(newToken.isNft());
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const onClick = () => {
-    if (!disabled) setIsModalOpen(true);
+  const onClickField = () => {
+    if (!disabled && !isAutomaticSelection) setIsModalOpen(true);
   };
 
   return (
     <>
-      <button
-        type="button"
-        name={field.name}
-        className={`${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
-        onClick={onClick}
-      >
-        <div className="flex items-center">
-          <TokenIcon token={token} size={20} />
-          <span className={`ml-2 ${!token?.symbol && 'text-slate-400'}`}>
-            {token?.symbol || 'Select Token'}
-          </span>
-        </div>
-        <Image src={ChevronIcon} width={12} height={8} alt="" />
-      </button>
+      <TokenButton
+        token={getTokenByIndex(field.value)}
+        disabled={isAutomaticSelection || disabled}
+        onClick={onClickField}
+        isAutomatic={isAutomaticSelection}
+      />
       <TokenListModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
-        onSelect={handleChange}
-        originCaip2Id={originCaip2Id}
-        destinationCaip2Id={destinationCaip2Id}
-        tokenRoutes={tokenRoutes}
+        onSelect={onSelectToken}
+        origin={values.origin}
+        destination={values.destination}
       />
     </>
   );
 }
 
+function TokenButton({
+  token,
+  disabled,
+  onClick,
+  isAutomatic,
+}: {
+  token?: IToken;
+  disabled?: boolean;
+  onClick?: () => void;
+  isAutomatic?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      className={`${styles.base} ${disabled ? styles.disabled : styles.enabled}`}
+      onClick={onClick}
+    >
+      <div className="flex items-center">
+        {token && <TokenIcon token={token} size={20} />}
+        <span className={`ml-2 ${!token?.symbol && 'text-slate-400'}`}>
+          {token?.symbol || (isAutomatic ? 'No routes available' : 'Select Token')}
+        </span>
+      </div>
+      {!isAutomatic && <Image src={ChevronIcon} width={12} height={8} alt="" />}
+    </button>
+  );
+}
+
 const styles = {
-  base: 'mt-1.5 w-full px-2.5 py-2 flex items-center justify-between text-sm bg-white rounded border border-gray-400 outline-none transition-colors duration-500',
-  enabled: 'hover:bg-gray-50 active:bg-gray-100 focus:border-blue-500',
-  disabled: 'bg-gray-150 cursor-default',
+  base: 'mt-1.5 w-full px-2.5 py-2.5 flex items-center justify-between text-sm rounded-lg border border-primary-300 outline-none transition-colors duration-500',
+  enabled: 'hover:bg-gray-100 active:scale-95 focus:border-primary-500',
+  disabled: 'bg-gray-100 cursor-default',
 };
