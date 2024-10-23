@@ -8,7 +8,7 @@ export const warpRouteWhitelist: Array<string> = [
   'DAI/arbitrum-bsc-kalychain-polygon',
   'ETH/arbitrum-bsc-kalychain-polygon',
   'POL/kalychain-polygon',
-  'USDT/arbitrum-bsc-kalychain-polygon',
-  'USDC/arbitrum-bsc-kalychain-polygon',
-  'WBTC/arbitrum-bsc-kalychain-polygon',
+  'USDT/arbitrum-kalychain-polygon',
+  'USDC/arbitrum-kalychain-polygon',
+  'WBTC/arbitrum-kalychain-polygon',
 ];
