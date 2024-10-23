@@ -289,7 +289,7 @@ tokens:
       - token: ethereum|arbitrum|0x3CDbaBE5Bf4E6cfE10A2A326E0ad31b2d16398D4
       - token: ethereum|kalychain|0xaA77D4a26d432B82DB07F8a47B7f7F623fd92455
       - token: ethereum|polygon|0xfF00e814A0dCB9a614585c212C78Fdc596d02e47
-    decimals: 8
+    decimals: 18
     name: Wrapped BTC
     standard: EvmHypCollateral
     symbol: WBTC
